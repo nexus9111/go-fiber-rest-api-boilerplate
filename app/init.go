@@ -1,8 +1,12 @@
 package app
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/kamva/mgm/v3"
 	"github.com/nexus9111/go-rest-api-boilerplate/app/models"
+	"github.com/nexus9111/go-rest-api-boilerplate/app/personController"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const PORT = ":3000"
@@ -17,6 +21,11 @@ var router = []models.Router{
 		Method:      models.POST,
 		Path:        "/",
 		RelatedFunc: postHelloWorld,
+	},
+	{
+		Method:      models.POST,
+		Path:        "/person",
+		RelatedFunc: personController.NewPerson,
 	},
 }
 
@@ -44,6 +53,13 @@ func postHelloWorld(c *fiber.Ctx) error {
 }
 
 func Init() {
+	err := mgm.SetDefaultConfig(nil, "go-rest-api-boilerplate", options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Database connected")
+
 	app := fiber.New()
 
 	for _, r := range router {
@@ -57,7 +73,7 @@ func Init() {
 		}
 	}
 
-	err := app.Listen(PORT)
+	err = app.Listen(PORT)
 	if err != nil {
 		panic(err)
 	}
