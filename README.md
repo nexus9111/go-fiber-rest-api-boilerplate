@@ -1,8 +1,8 @@
-# 🚀 Go rest api using fiber
+## 🚀 Go rest api using fiber
 
 Description is coming ...
 
-# 📜 License
+## 📜 License
 
 - Author: @nexus9111
 - Created: 2023-03-01 (yyyy-mm-dd)
