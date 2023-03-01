@@ -1,26 +1,19 @@
 package app
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"github.com/kamva/mgm/v3"
+	"github.com/joho/godotenv"
+	"github.com/nexus9111/go-rest-api-boilerplate/app/dbController"
 	"github.com/nexus9111/go-rest-api-boilerplate/app/models"
 	"github.com/nexus9111/go-rest-api-boilerplate/app/personController"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"os"
 )
-
-const PORT = ":3000"
 
 var router = []models.Router{
 	{
 		Method:      models.GET,
 		Path:        "/",
 		RelatedFunc: helloWorld,
-	},
-	{
-		Method:      models.POST,
-		Path:        "/",
-		RelatedFunc: postHelloWorld,
 	},
 	{
 		Method:      models.POST,
@@ -42,23 +35,16 @@ func helloWorld(c *fiber.Ctx) error {
 	return c.JSON(response)
 }
 
-func postHelloWorld(c *fiber.Ctx) error {
-	p := new(models.Person)
-
-	if err := c.BodyParser(p); err != nil {
-		return err
+func Init() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic("Error loading .env file")
 	}
 
-	return c.JSON(p)
-}
-
-func Init() {
-	err := mgm.SetDefaultConfig(nil, "go-rest-api-boilerplate", options.Client().ApplyURI("mongodb://localhost:27017"))
+	err = dbController.Connect()
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println("Database connected")
 
 	app := fiber.New()
 
@@ -73,7 +59,7 @@ func Init() {
 		}
 	}
 
-	err = app.Listen(PORT)
+	err = app.Listen(":" + os.Getenv("PORT"))
 	if err != nil {
 		panic(err)
 	}
